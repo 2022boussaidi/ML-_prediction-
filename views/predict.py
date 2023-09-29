@@ -9,9 +9,11 @@ from h2o.automl import H2OAutoML
 from flask_swagger_ui import get_swaggerui_blueprint
 import h2o
 from h2o.automl import H2OAutoML
+from flask_cors import CORS  # Import CORS from flask_cors
 
 
 app = Flask(__name__)
+CORS(app)
 ## swagger specific ###
 SWAGGER_URL = '/swagger'
 API_URL = '/static/swagger_predict.json'
@@ -36,7 +38,7 @@ def predict(model):
          pred_ans = uploaded_model.predict(test).as_data_frame()
          item_dict['Prediction'] = pred_ans.predict.values[0]
          print(item_dict)
-         return (item_dict)    # return the result /the prediction
+         return jsonify(item_dict)   # return the result /the prediction
         
 if __name__ == "__main__":
     app.run(debug=True, port=5004)
