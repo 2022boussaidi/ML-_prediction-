@@ -8,6 +8,8 @@ from flask_swagger_ui import get_swaggerui_blueprint
 import h2o
 from h2o.automl import H2OAutoML
 from models.models import File
+import pandas as pd
+
 
 
 app = Flask(__name__)
@@ -48,7 +50,7 @@ def add_model(id):
         m=Models()
         fd= request.files['file']
         m.model_name=fd.filename
-        m.path=os.path.join(os.path.abspath('../ML_models'), fd.filename)
+        m.path=os.path.join(os.path.abspath('ML_models'), fd.filename)
         filename = secure_filename(fd.filename)
         fd.save( filename)
         m.save()
@@ -57,7 +59,7 @@ def add_model(id):
         return("model added successefully")
 
 
-@app.route('/train/<id>', methods=['POST'])
+@app.route('/train/<id>', methods=['POST']) #train models using a file /id : the idi of a file)
 def apload(id):
     h2o.init()
     json_data = request.json
@@ -76,7 +78,8 @@ def apload(id):
     lb = aml.leaderboard
 
     model_ids = list(lb['model_id'].as_data_frame().iloc[:, 0])
-    out_path = "../ML_models"
+    model_ids_df = pd.DataFrame({'model_id': model_ids})
+    out_path = "ML_models"
     for m_id in model_ids: # save all models locally
         mdl = h2o.get_model(m_id)
         h2o.save_model(model=mdl, path=out_path, force=True)

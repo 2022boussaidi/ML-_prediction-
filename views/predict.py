@@ -29,12 +29,12 @@ app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 def predict(model):
          h2o.init()
          item_dict = {}
-         model_name = os.path.join("./ML_models", model)
+         model_name = os.path.join("ML_models", model)
          uploaded_model = h2o.load_model(model_name)   
          testing= request.get_json() 
          test = h2o.H2OFrame(testing)
          pred_ans = uploaded_model.predict(test).as_data_frame()
-         item_dict['Prediction'] = int(pred_ans.predict.values[0])
+         item_dict['Prediction'] = pred_ans.predict.values[0]
          print(item_dict)
          return (item_dict)    # return the result /the prediction
         
